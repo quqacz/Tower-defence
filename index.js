@@ -1,85 +1,40 @@
-var canvas = document.querySelector("#canvas");
-const H = canvas.height = window.innerHeight;
-const W = canvas.width = window.innerWidth;
+const canvas = document.querySelector("#canvas");
+let H = canvas.height = window.innerHeight;
+let W = canvas.width = window.innerWidth;
 const c = canvas.getContext("2d");
-var day=0;
-var max=12;
-var enemiesTypes=0;
-var STATUS = 'MENU';
-var PREVIOUS ='';
-var created = 0;
-var soonDead = [];
-var enemies = [];
-var rays = [];
-var player = new Player;
-var spawnRate = 0.993;
-var mousePos={
-	x:0, y:0
-}
-var mainScreenImg = new Image();
+let day=0;
+let max=12;
+let enemiesTypes=0;
+let STATUS = 'MENU';
+let PREVIOUS ='';
+let created = 0;
+let spawnRate = 0.993;
+const mainScreenImg = new Image();
 mainScreenImg.src = 'imgs/mainScreen.png';
-var background = new Image();
+const background = new Image();
 background.src = 'imgs/background.png';
-var currentGunSprite = new Image();
-var upgradeImgs=[
-	"imgs/upgrades/ammo.png",
-	"imgs/upgrades/maxHp.png",
-	"imgs/upgrades/restoreHp.png",
-	"imgs/upgrades/dmgBuff.png"
-]
-var upgradePrices = {
-	ammo: 1000,
-	maxHp: 5000,
-	restoreHp: 500,
-	dmgBuff: 7500
-}
-var pricesGrowth = {
-	ammo: 150,
-	maxHp: 1000,
-	restoreHp: 50,
-	dmgBuff: 10000
-}
-var settings={
-	showHpBars: true,
-	showReloadAnimation: true,
-	showDeathAnimation: true,
-	showRays:true
-}
-var sampleGun = new Gun;
-var sampleGunImg = new Image;
+const currentGunSprite = new Image();
 
-var gunUpgrades={
-	shotgun: 1,
-	ar: 1,
-	sniper: 1
-}
-var gunSprites={
-	shotgun: [
-		"imgs/guns/shotgun1Sprite.png",
-		"imgs/guns/shotgun2Sprite.png",
-		"imgs/guns/shotgun3Sprite.png"
-	],
-	ar: [
-		"imgs/guns/ar1sprite.png",
-		"imgs/guns/ar2sprite.png",
-		"imgs/guns/ar3sprite.png"
-	],
-	sniper: [
-		"imgs/guns/sniper1sprite.png",
-		"imgs/guns/sniper2sprite.png",
-		"imgs/guns/sniper3sprite.png"
-	]
-}
-var shotgunSprite = new Image();
+const player = new Player;
+
+let sampleGun = new Gun;
+let sampleGunImg = new Image;
+
+const shotgunSprite = new Image();
 	shotgunSprite.src = gunSprites.shotgun[gunUpgrades.shotgun-1];
-var arSprite = new Image();
+const arSprite = new Image();
 	arSprite.src = gunSprites.ar[gunUpgrades.ar-1];
-var sniperSprite = new Image();
+const sniperSprite = new Image();
 	sniperSprite.src = gunSprites.sniper[gunUpgrades.sniper-1];
+
 animate();
 
+window.addEventListener('resize', () => {
+	H = canvas.height = window.innerHeight;
+	W = canvas.width = window.innerWidth;
+})
 
-canvas.addEventListener('click', function(evt) {
+canvas.addEventListener('click', function() {
 	switch(STATUS){
 		case 'MENU':
 			if(mousePos.x>=100 && mousePos.x<= 500 && mousePos.y>=H/2-150 && mousePos.y<=H/2-40){
@@ -221,7 +176,7 @@ canvas.addEventListener('mousemove', function(evt) {
 }, false);
 
 function getMousePos(canvas, evt) {
-  var rect = canvas.getBoundingClientRect();
+  let rect = canvas.getBoundingClientRect();
   return {
     x: evt.clientX - rect.left,
     y: evt.clientY - rect.top
@@ -241,7 +196,7 @@ function animate(){
 			createEnemies();
 			enemies.sort(compareValues('x'))
 			for(i=0; i<soonDead.length; i++){
-				soonDead[i].dead() ? soonDead.splice(i,1) : soonDead[i].showDeath();
+				soonDead[i].dead() ? soonDead.splice(i,1) : soonDead[i].showDeath(c);
 			}
 			if(settings.showRays===true){
 				for(i=0; i<rays.length; i++){
@@ -252,11 +207,11 @@ function animate(){
 			}
 			for(i=0;i<enemies.length;i++){
 				if(enemies[i].alive){
-					enemies[i].show();
+					enemies[i].show(c);
 					enemies[i].update();
 				}
 				if(enemies[i].damaged()&&settings.showHpBars===true){
-					enemies[i].showHpBar();
+					enemies[i].showHpBar(c);
 				}
 				if(enemies[i].dangerous()){
 					player.takeDmg(enemies[i].dealDmg());
@@ -327,7 +282,20 @@ function createEnemies(){
 		let chance = Math.random();
 		if(chance>spawnRate){
 			let type = Math.round(Math.random()*enemiesTypes);
-			let enemy = new Enemy(type, -40);
+			let enemy;
+			switch(type){
+				case 0:
+					enemy = new defaultEnemy(-40, day);
+					break;
+				case 1:
+					enemy = new arEnemy(-40, day);
+					break;
+				case 2:
+					enemy = new boomerEnemy(-40, day);
+					break;
+				case 3:
+					enemy = new shieldEnemy(-40, day);
+			}
 			enemies.push(enemy);
 			created++;
 		}
@@ -344,7 +312,20 @@ function nextDay(){
 	// day===4 ? enemiesTypes++ : enemiesTypes+=0;	// motorcycle dude?
 	// day===5 ? enemiesTypes++ : enemiesTypes+=0;	// motherfucking tank babe
 	created = 0;
-	let enemy = new Enemy(enemiesTypes,-40);
+	let enemy;
+	switch(enemiesTypes){
+		case 0:
+			enemy = new defaultEnemy(-40, day);
+			break;
+		case 1:
+			enemy = new arEnemy(-40, day);
+			break;
+		case 2:
+			enemy = new boomerEnemy(-40, day);
+			break;
+		case 3:
+			enemy = new shieldEnemy(-40, day);
+	}
 	enemies.push(enemy);
 	created++;
 	spawnRate-=0.001;
@@ -698,15 +679,15 @@ function compareValues(key, order = 'desc') {
       return 0;
     }
 
-    const varA = (typeof a[key] === 'string')
+    const letA = (typeof a[key] === 'string')
       ? a[key].toUpperCase() : a[key];
-    const varB = (typeof b[key] === 'string')
+    const letB = (typeof b[key] === 'string')
       ? b[key].toUpperCase() : b[key];
 
     let comparison = 0;
-    if (varA > varB) {
+    if (letA > letB) {
       comparison = 1;
-    } else if (varA < varB) {
+    } else if (letA < letB) {
       comparison = -1;
     }
     return (
