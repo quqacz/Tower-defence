@@ -84,51 +84,51 @@ class Enemy{
 	}
 }
 Enemy.prototype.show = function(c){
-		// c.beginPath();
-		// c.moveTo(this.x,this.y);
-		// c.lineTo(this.x, this.y+this.h);
-		// c.stroke();
-		this.animationFrame++;
-		if(this.atDestination===true){
-			if(this.animationFrame>=this.atackMaxTimeout/this.atackArray.length){
-				this.animationFrame=0;
-				this.frame++;
-				if(this.frame>=this.atackArray.length)
-					this.frame=0;
-			}
-			this.image.src= this.atackArray[this.frame];
-		} else {
-			
-			if(this.animationFrame===this.animationLoop){
-				this.animationFrame=0;
-				this.frame++;
-				if(this.frame>=this.imageArray.length){
-					this.frame=0;
-				}
-			}
-			this.image.src = this.imageArray[this.frame];
-		}
-		c.drawImage(this.image,this.x-40,this.y,80,this.h);
-}
-Enemy.prototype.showDeath = function(c){
-		this.animationFrame++;
-		if(this.animationFrame>=this.deathMaxTimeout/this.deathArray.length){
+	// c.beginPath();
+	// c.moveTo(this.x,this.y);
+	// c.lineTo(this.x, this.y+this.h);
+	// c.stroke();
+	this.animationFrame++;
+	if(this.atDestination===true){
+		if(this.animationFrame>=this.atackMaxTimeout/this.atackArray.length){
 			this.animationFrame=0;
 			this.frame++;
+			if(this.frame>=this.atackArray.length)
+				this.frame=0;
 		}
-		this.image.src= this.deathArray[this.frame];
-		c.drawImage(this.image,this.x-40,this.y,80,this.h);
+		this.image.src= this.atackArray[this.frame];
+	} else {
+		
+		if(this.animationFrame===this.animationLoop){
+			this.animationFrame=0;
+			this.frame++;
+			if(this.frame>=this.imageArray.length){
+				this.frame=0;
+			}
+		}
+		this.image.src = this.imageArray[this.frame];
+	}
+	c.drawImage(this.image,this.x-40,this.y,80,this.h);
+}
+Enemy.prototype.showDeath = function(c){
+	this.animationFrame++;
+	if(this.animationFrame>=this.deathMaxTimeout/this.deathArray.length){
+		this.animationFrame=0;
+		this.frame++;
+	}
+	this.image.src= this.deathArray[this.frame];
+	c.drawImage(this.image,this.x-40,this.y,80,this.h);
 }
 
 Enemy.prototype.showHpBar = function(c){
-		c.rect(this.x-this.hpBarWidth/2, this.y-this.hpBarHeight*2,this.hpBarWidth, this.hpBarHeight);
-		c.stroke();
-		c.fillStyle = 'red';
-		c.fillRect(this.x-this.hpBarWidth/2+1, this.y-this.hpBarHeight*2+1, this.hpBarWidth-2, this.hpBarHeight-2);
-		c.fillStyle = 'green';
-		if(this.hp>=0)
-			c.fillRect(this.x-this.hpBarWidth/2+1, this.y-this.hpBarHeight*2+1, this.hp/this.maxHp*this.hpBarWidth-2, this.hpBarHeight-2);
-		c.fillRect(this.x-this.hpBarWidth/2+1, this.y-this.hpBarHeight*2+1, 0, this.hpBarHeight-2);
+	c.rect(this.x-this.hpBarWidth/2, this.y-this.hpBarHeight*2,this.hpBarWidth, this.hpBarHeight);
+	c.stroke();
+	c.fillStyle = 'red';
+	c.fillRect(this.x-this.hpBarWidth/2+1, this.y-this.hpBarHeight*2+1, this.hpBarWidth-2, this.hpBarHeight-2);
+	c.fillStyle = 'green';
+	if(this.hp>=0)
+		c.fillRect(this.x-this.hpBarWidth/2+1, this.y-this.hpBarHeight*2+1, this.hp/this.maxHp*this.hpBarWidth-2, this.hpBarHeight-2);
+	c.fillRect(this.x-this.hpBarWidth/2+1, this.y-this.hpBarHeight*2+1, 0, this.hpBarHeight-2);
 }
 
 Enemy.prototype.kill = function(){
